@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Для тебя ❤️</title>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;700&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    min-height: 100vh;
+    background: linear-gradient(180deg, #0a1428 0%, #16294a 50%, #1e3a5f 100%);
+    font-family: 'Cormorant Garamond', serif;
+    color: #e8e2d5;
+    overflow-x: hidden;
+    position: relative;
+  }
+
+  /* ===== ДОЖДЬ ===== */
+  .rain {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 1;
+    overflow: hidden;
+    transition: opacity 1.5s ease;
+  }
+  .drop {
+    position: absolute;
+    width: 1px;
+    height: 80px;
+    background: linear-gradient(transparent, rgba(200, 220, 255, 0.6));
+    animation: fall linear infinite;
+  }
+  @keyframes fall {
+    to { transform: translateY(110vh); }
+  }
+
+  /* ===== МОЛНИЯ ===== */
+  .lightning {
+    position: fixed;
+    inset: 0;
+    background: rgba(200, 220, 255, 0.4);
+    opacity: 0;
+    pointer-events: none;
+    z-index: 2;
+    animation: flash 12s infinite;
+  }
+  @keyframes flash {
+    0%, 90%, 100% { opacity: 0; }
+    91% { opacity: 0.6; }
+    92% { opacity: 0; }
+    93% { opacity: 0.4; }
+    94% { opacity: 0; }
+  }
+
+  /* ===== ЭКРАН 1: КОНВЕРТ ===== */
+  .intro {
+    position: fixed;
+    inset: 0;
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    transition: opacity 1.2s ease, transform 1.2s ease;
+  }
+  .intro.hidden {
+    opacity: 0;
+    transform: scale(1.1);
+    pointer-events: none;
+  }
+
+  .envelope-wrap {
+    position: relative;
+    width: min(340px, 85vw);
+    margin-bottom: 40px;
+    cursor: pointer;
+    transition: transform 0.6s ease;
+    animation: float 4s ease-in-out infinite;
+  }
+  .envelope-wrap:hover {
+    transform: translateY(-8px) scale(1.02);
+  }
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+  }
+
+  .envelope {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 1.5 / 1;
+    background: linear-gradient(160deg, #f5f0e6, #d8cbb0);
+    border-radius: 6px;
+    box-shadow:
+      0 25px 60px rgba(0, 0, 0, 0.6),
+      inset 0 0 0 1px rgba(255, 255, 255, 0.3);
+  }
+  .envelope::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 55%;
+    background: linear-gradient(180deg, #e8dcc4, #d8cbb0);
+    clip-path: polygon(0 0, 100% 0, 50% 100%);
+    border-radius: 6px 6px 0 0;
+    box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.5);
+  }
+  .envelope::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 55%;
+    background: linear-gradient(160deg, #e8dcc4 0%, #d0c0a0 100%);
+    clip-path: polygon(0 100%, 100% 100%, 100% 0, 50% 45%, 0 0);
+    border-radius: 0 0 6px 6px;
+  }
+
+  .seal {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -20%);
+    width: 70px;
+    height: 70px;
+    background: radial-gradient(circle at 35% 30%, #b8283f, #7a0f1f);
+    border-radius: 50%;
+    z-index: 3;
+    box-shadow:
+      0 4px 15px rgba(0, 0, 0, 0.5),
+      inset 0 -3px 8px rgba(0, 0, 0, 0.3),
+      inset 0 3px 8px rgba(255, 150, 150, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Caveat', cursive;
+    font-size: 32px;
+    font-weight: 700;
+    color: #f5d0d8;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+  }
+  .seal::before {
+    content: '';
+    position: absolute;
+    inset: 6px;
+    border: 1px solid rgba(255, 200, 210, 0.3);
+    border-radius: 50%;
+  }
+.intro-title {
+    font-family: 'Caveat', cursive;
+    font-size: clamp(32px, 6vw, 48px);
+    color: #f5f0e6;
+    text-align: center;
+    margin-bottom: 12px;
+    text-shadow: 0 0 30px rgba(150, 190, 255, 0.5);
+    animation: fadeUp 1.5s ease both;
+  }
+  .intro-sub {
+    font-style: italic;
+    color: #a8bcd4;
+    font-size: 17px;
+    text-align: center;
+    margin-bottom: 36px;
+    animation: fadeUp 1.5s 0.3s ease both;
+  }
+
+  .btn-open {
+    position: relative;
+    padding: 18px 48px;
+    background: transparent;
+    border: 1px solid rgba(255, 216, 138, 0.6);
+    color: #ffd88a;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 18px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    cursor: pointer;
+    border-radius: 2px;
+    transition: all 0.4s ease;
+    overflow: hidden;
+    animation: fadeUp 1.5s 0.6s ease both;
+  }
+  .btn-open::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, transparent, rgba(255, 216, 138, 0.25), transparent);
+    transform: translateX(-100%);
+    transition: transform 0.8s ease;
+  }
+  .btn-open:hover {
+    background: rgba(255, 216, 138, 0.1);
+    box-shadow: 0 0 40px rgba(255, 216, 138, 0.4);
+    letter-spacing: 4px;
+  }
+  .btn-open:hover::before {
+    transform: translateX(100%);
+  }
+
+  /* ===== ЭКРАН 2: ПИСЬМО ===== */
+  .container {
+    position: relative;
+    z-index: 3;
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 60px 24px 100px;
+    opacity: 0;
+    transform: translateY(40px);
+    transition: opacity 1.5s 0.4s ease, transform 1.5s 0.4s ease;
+  }
+  .container.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .header {
+    text-align: center;
+    margin-bottom: 50px;
+  }
+
+  .reel {
+    display: inline-block;
+    font-size: 13px;
+    letter-spacing: 4px;
+    color: #8fa8c8;
+    text-transform: uppercase;
+    margin-bottom: 20px;
+  }
+  .reel::before, .reel::after {
+    content: '—';
+    margin: 0 12px;
+    opacity: 0.4;
+  }
+
+  h1 {
+    font-family: 'Caveat', cursive;
+    font-size: clamp(48px, 9vw, 84px);
+    font-weight: 700;
+    color: #f5f0e6;
+    line-height: 1;
+    margin-bottom: 18px;
+    text-shadow: 0 0 30px rgba(150, 190, 255, 0.5);
+  }
+
+  .subtitle {
+    font-style: italic;
+    font-size: 19px;
+    color: #a8bcd4;
+  }
+
+  .film-info {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    flex-wrap: wrap;
+    margin: 40px 0 30px;
+    padding: 20px;
+    border-top: 1px solid rgba(150, 190, 255, 0.2);
+    border-bottom: 1px solid rgba(150, 190, 255, 0.2);
+  }
+  .film-info div { text-align: center; }
+  .film-info .label {
+    display: block;
+    font-size: 11px;
+    letter-spacing: 3px;
+    color: #6d87a8;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+  .film-info .value {
+    font-family: 'Caveat', cursive;
+    font-size: 24px;
+    color: #f5f0e6;
+  }
+  .timestamp .value {
+    color: #ffd88a;
+    text-shadow: 0 0 20px rgba(255, 216, 138, 0.5);
+  }
+
+  .letter {
+    position: relative;
+    background: linear-gradient(180deg, rgba(245, 240, 230, 0.97), rgba(232, 226, 213, 0.97));
+    color: #2a2418;
+    padding: clamp(30px, 6vw, 60px) clamp(24px, 5vw, 55px);
+    border-radius: 4px;
+    box-shadow:
+      0 30px 80px rgba(0, 0, 0, 0.5),
+      0 0 0 1px rgba(255, 255, 255, 0.1),
+      inset 0 0 100px rgba(180, 160, 120, 0.15);
+  }
+  .letter::before {
+    content: '';
+    position: absolute;
+    inset: 8px;
+    border: 1px solid rgba(180, 160, 120, 0.3);
+    border-radius: 2px;
+    pointer-events: none;
+  }
+
+  .letter p {
+    font-family: 'Caveat', cursive;
+    font-size: clamp(20px, 3.2vw, 26px);
+    line-height: 1.6;
+    color: #3a3222;
+    margin-bottom: 22px;
+  }
+  .letter p:first-child {
+    font-size: clamp(24px, 4vw, 32px);
+    font-weight: 700;
+    color: #1a1610;
+    margin-bottom: 28px;
+  }
+  .letter .accent {
+    color: #8b1e2d;
+    font-weight: 700;
+  }
+.letter .stain {
+    position: absolute;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(160, 140, 100, 0.25), transparent 70%);
+    pointer-events: none;
+  }
+  .stain.s1 { width: 90px; height: 90px; top: 15%; right: 8%; }
+  .stain.s2 { width: 60px; height: 60px; bottom: 20%; left: 5%; }
+  .stain.s3 { width: 120px; height: 120px; top: 55%; right: 15%; opacity: 0.5; }
+
+  .signature {
+    margin-top: 40px;
+    text-align: right;
+    font-family: 'Caveat', cursive;
+    font-size: clamp(22px, 3.5vw, 28px);
+    color: #5a4a30;
+  }
+  .signature .name {
+    display: block;
+    font-size: clamp(28px, 4.5vw, 38px);
+    font-weight: 700;
+    color: #8b1e2d;
+    margin-top: 4px;
+  }
+
+  .ps {
+    margin-top: 30px;
+    padding-top: 22px;
+    border-top: 1px dashed rgba(139, 30, 45, 0.4);
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: clamp(15px, 2.2vw, 17px);
+    color: #6a5a40;
+    text-align: center;
+    letter-spacing: 0.5px;
+  }
+  .ps strong {
+    color: #8b1e2d;
+    font-style: normal;
+    letter-spacing: 2px;
+  }
+
+  .heart {
+    text-align: center;
+    margin-top: 50px;
+    font-size: 28px;
+    animation: beat 1.6s ease-in-out infinite;
+    filter: drop-shadow(0 0 20px rgba(255, 100, 130, 0.6));
+  }
+  @keyframes beat {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.2); }
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ===== КНОПКА МУЗЫКИ ===== */
+  .music-toggle {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 20;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: rgba(20, 40, 70, 0.7);
+    border: 1px solid rgba(150, 190, 255, 0.3);
+    color: #a8bcd4;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(10px);
+    transition: all 0.3s ease;
+    opacity: 0;
+    pointer-events: none;
+  }
+  .music-toggle.visible {
+    opacity: 1;
+    pointer-events: auto;
+  }
+  .music-toggle:hover {
+    background: rgba(30, 60, 100, 0.9);
+    border-color: rgba(255, 216, 138, 0.5);
+    color: #ffd88a;
+  }
+  .music-toggle svg { width: 22px; height: 22px; }
+  .music-toggle .playing-icon { display: none; }
+  .music-toggle.playing .playing-icon { display: block; }
+  .music-toggle.playing .paused-icon { display: none; }
+
+  .music-toggle.playing::before {
+    content: '';
+    position: absolute;
+    inset: -4px;
+    border-radius: 50%;
+    border: 1px solid rgba(255, 216, 138, 0.5);
+    animation: pulse-ring 2s ease-out infinite;
+  }
+  @keyframes pulse-ring {
+    0% { transform: scale(1); opacity: 0.8; }
+    100% { transform: scale(1.4); opacity: 0; }
+  }
+
+  @media (max-width: 480px) {
+    .container { padding: 40px 16px 70px; }
+    .film-info { gap: 18px; }
+    .film-info .value { font-size: 20px; }
+    .music-toggle { top: 12px; right: 12px; width: 44px; height: 44px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Дождь -->
+<div class="rain" id="rain"></div>
+<div class="lightning"></div>
+
+<!-- Кнопка музыки -->
+<button class="music-toggle" id="musicToggle" aria-label="Музыка">
+  <svg class="paused-icon" viewBox="0 0 24 24" fill="currentColor">
+    <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/>
+  </svg>
+  <svg class="playing-icon" viewBox="0 0 24 24" fill="currentColor">
+    <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/>
+  </svg>
+</button>
+
+<!-- ЭКРАН 1: КОНВЕРТ -->
+<div class="intro" id="intro">
+  <div class="envelope-wrap" id="envelopeWrap">
+    <div class="envelope"></div>
+    <div class="seal">❤️</div>
+  </div>
+  <h2 class="intro-title">Тебе письмо</h2>
+  <p class="intro-sub">Нажми, чтобы открыть</p>
+  <button class="btn-open" id="btnOpen">Открыть письмо</button>
+</div>
+
+<!-- ЭКРАН 2: ПИСЬМО -->
+<div class="container" id="container">
+<header class="header">
+    <span class="reel">Наш сеанс</span>
+    <h1>Для тебя</h1>
+    <p class="subtitle">Это письмо — мой дождь.</p>
+  </header>
+
+  <div class="film-info">
+    <div>
+      <span class="label">Фильм</span>
+      <span class="value">Дневник памяти</span>
+    </div>
+    <div class="timestamp">
+      <span class="label">Момент</span>
+      <span class="value">01:16:09</span>
+    </div>
+    <div>
+      <span class="label">Сцена</span>
+      <span class="value">Под дождём</span>
+    </div>
+  </div>
+
+  <div class="letter">
+    <span class="stain s1"></span>
+    <span class="stain s2"></span>
+    <span class="stain s3"></span>
+
+    <p>Моя любимая!</p>
+
+    <p>Помнишь «Дневник памяти»? Там есть момент, когда Ной и Элли стоят под проливным дождём. Казалось бы, просто ливень. Но для них — это момент, когда рушатся все стены, когда слова уже не нужны, потому что сердце кричит громче любого грома.</p>
+
+    <p>Я смотрю на нас и понимаю: <span class="accent">ты — моя Элли</span>. Ты — тот человек, ради которого я готов стоять под любым дождём, ждать столько, сколько потребуется, и снова и снова выбирать тебя. Даже если весь мир будет против.</p>
+
+    <p>Это письмо — мой дождь. Моя попытка сказать то, что я иногда не решаюсь произнести вслух. <span class="accent">Я люблю тебя.</span> Не за что-то. А просто потому, что ты — это ты.</p>
+
+    <div class="signature">
+      Твой,
+      <span class="name">Альберт</span>
+    </div>
+
+    <div class="ps">
+      <strong>P.S.</strong> Включи «Дневник памяти» на 01:16:09 — там наш дождь.<br>И там я снова выбираю тебя.
+    </div>
+  </div>
+
+  <div class="heart">❤️</div>
+
+</div>
+
+<script>
+  /* ===== ДОЖДЬ ===== */
+  const rain = document.getElementById('rain');
+  for (let i = 0; i < 60; i++) {
+    const drop = document.createElement('div');
+    drop.className = 'drop';
+    drop.style.left = Math.random() * 100 + '%';
+    drop.style.animationDuration = (0.5 + Math.random() * 0.8) + 's';
+    drop.style.animationDelay = Math.random() * 5 + 's';
+    drop.style.opacity = 0.2 + Math.random() * 0.5;
+    drop.style.height = (40 + Math.random() * 80) + 'px';
+    rain.appendChild(drop);
+  }
+
+  /* ===== ОТКРЫТИЕ ПИСЬМА ===== */
+  const intro = document.getElementById('intro');
+  const container = document.getElementById('container');
+  const btnOpen = document.getElementById('btnOpen');
+  const envelopeWrap = document.getElementById('envelopeWrap');
+  const musicToggle = document.getElementById('musicToggle');
+
+  function openLetter() {
+    envelopeWrap.style.transition = 'transform 0.8s ease, opacity 0.8s ease';
+    envelopeWrap.style.transform = 'translateY(-60px) rotate(-5deg) scale(0.7)';
+    envelopeWrap.style.opacity = '0';
+
+    setTimeout(() => {
+      intro.classList.add('hidden');
+      container.classList.add('visible');
+      musicToggle.classList.add('visible');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }, 600);
+
+    startMusic();
+    musicToggle.classList.add('playing');
+  }
+
+  btnOpen.addEventListener('click', openLetter);
+  envelopeWrap.addEventListener('click', openLetter);
+
+  /* ===== МУЗЫКА (Web Audio API) ===== */
+  let audioCtx = null;
+  let musicPlaying = false;
+  let musicTimer = null;
+  let masterGain = null;
+
+  const progression = [
+    [220.00, 261.63, 329.63], // A3, C4, E4 (Am)
+    [174.61, 220.00, 261.63], // F3, A3, C4 (F)
+    [130.81, 164.81, 196.00], // C3, E3, G3 (C)
+    [196.00, 246.94, 293.66]  // G3, B3, D4 (G)
+  ];
+
+  function initAudio() {
+    if (audioCtx) return;
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+    masterGain = audioCtx.createGain();
+    masterGain.gain.value = 0.18;
+
+    const delay = audioCtx.createDelay();
+    delay.delayTime.value = 0.4;
+    const feedback = audioCtx.createGain();
+    feedback.gain.value = 0.35;
+    const wetGain = audioCtx.createGain();
+    wetGain.gain.value = 0.3;
+
+    delay.connect(feedback);
+    feedback.connect(delay);
+    delay.connect(wetGain);
+    wetGain.connect(masterGain);
+    masterGain.connect(audioCtx.destination);
+
+    masterGain._delay = delay;
+  }
+function playNote(freq, time, duration, gain = 0.5) {
+    const osc = audioCtx.createOscillator();
+    const noteGain = audioCtx.createGain();
+
+    osc.type = 'triangle';
+    osc.frequency.value = freq;
+
+    noteGain.gain.setValueAtTime(0, time);
+    noteGain.gain.linearRampToValueAtTime(gain, time + 0.05);
+    noteGain.gain.exponentialRampToValueAtTime(0.001, time + duration);
+
+    osc.connect(noteGain);
+    noteGain.connect(masterGain);
+    noteGain.connect(masterGain._delay);
+
+    osc.start(time);
+    osc.stop(time + duration + 0.1);
+  }
+
+  let step = 0;
+  function schedulePhrase() {
+    if (!musicPlaying || !audioCtx) return;
+
+    const now = audioCtx.currentTime;
+    const chord = progression[step % progression.length];
+
+    chord.forEach((freq, i) => {
+      playNote(freq, now + i * 0.08, 3.5, 0.35);
+    });
+
+    const melodyFreq = chord[Math.floor(Math.random() * chord.length)] * 2;
+    playNote(melodyFreq, now + 0.5, 2.5, 0.25);
+
+    if (Math.random() > 0.5) {
+      const extra = chord[Math.floor(Math.random() * chord.length)] * 2;
+      playNote(extra, now + 1.6, 2.0, 0.2);
+    }
+
+    step++;
+    musicTimer = setTimeout(schedulePhrase, 3200);
+  }
+
+  function startMusic() {
+    initAudio();
+    if (audioCtx.state === 'suspended') {
+      audioCtx.resume();
+    }
+    if (!musicPlaying) {
+      musicPlaying = true;
+      schedulePhrase();
+    }
+  }
+
+  function stopMusic() {
+    musicPlaying = false;
+    if (musicTimer) {
+      clearTimeout(musicTimer);
+      musicTimer = null;
+    }
+    if (masterGain) {
+      masterGain.gain.linearRampToValueAtTime(0.0001, audioCtx.currentTime + 0.5);
+      setTimeout(() => {
+        if (masterGain && !musicPlaying) {
+          masterGain.gain.value = 0.18;
+        }
+      }, 600);
+    }
+  }
+
+  musicToggle.addEventListener('click', () => {
+    if (musicPlaying) {
+      stopMusic();
+      musicToggle.classList.remove('playing');
+    } else {
+      startMusic();
+      musicToggle.classList.add('playing');
+    }
+  });
+</script>
+
+</body>
+</html>
